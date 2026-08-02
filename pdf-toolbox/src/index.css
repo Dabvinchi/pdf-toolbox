@@ -124,3 +124,19 @@ header p {
 .remove-button:hover {
   transform: scale(1.2);
 }
+.merge-button {
+  margin-top: 30px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 18px 40px;
+  border-radius: 12px;
+  font-size: 20px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.merge-button:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+}
