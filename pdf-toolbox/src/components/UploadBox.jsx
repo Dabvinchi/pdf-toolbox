@@ -1,7 +1,7 @@
-import { useState } from "react";
 
-function UploadBox() {
-  const [files, setFiles] = useState([]);
+
+function UploadBox({ files, setFiles }) {
+
 
   function handleFiles(event) {
     const selectedFiles = Array.from(event.target.files);
@@ -24,8 +24,11 @@ function UploadBox() {
   onDragOver={(e) => e.preventDefault()}
   onDrop={handleDrop}
 >
-      <h2>📂 Upload PDFs</h2>
-      <p>Drag & Drop PDFs here.</p>
+      <h2>Drag & Drop PDFs Here</h2>
+
+        <p>
+            or click the button below to browse your files.
+        </p>
 
       <input
         type="file"
