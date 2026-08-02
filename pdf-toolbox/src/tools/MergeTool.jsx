@@ -1,6 +1,7 @@
 import UploadBox from "../components/UploadBox";
 import MergeButton from "../components/MergeButton";
 import MergeHeader from "../features/merge/MergeHeader";
+import FileList from "../features/merge/FileList";
 
 function MergeTool({ files, setFiles, setActiveTool }) {
   return (
@@ -18,7 +19,10 @@ function MergeTool({ files, setFiles, setActiveTool }) {
         files={files}
         setFiles={setFiles}
       />
-
+        <FileList
+  files={files}
+  setFiles={setFiles}
+/>
       <MergeButton
         files={files}
       />
