@@ -1,34 +1,40 @@
-
-
 function UploadBox({ files, setFiles }) {
 
-
   function handleFiles(event) {
-    const selectedFiles = Array.from(event.target.files);
-    setFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
+    const selectedFiles = Array.from(event.target.files).map((file) => ({
+  id: crypto.randomUUID(),
+  file,
+}));
+
+setFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
   }
+
   function handleDrop(event) {
-  event.preventDefault();
+    event.preventDefault();
 
-  const droppedFiles = Array.from(event.dataTransfer.files);
+    const pdfFiles = droppedFiles
+  .filter((file) => file.type === "application/pdf")
+  .map((file) => ({
+    id: crypto.randomUUID(),
+    file,
+  }));
 
-  const pdfFiles = droppedFiles.filter(
-    (file) => file.type === "application/pdf"
-  );
+setFiles((prevFiles) => [...prevFiles, ...pdfFiles]);
 
-  setFiles((prevFiles) => [...prevFiles, ...pdfFiles]);
-}
+    setFiles((prevFiles) => [...prevFiles, ...pdfFiles]);
+  }
+
   return (
     <div
-  className="upload-box"
-  onDragOver={(e) => e.preventDefault()}
-  onDrop={handleDrop}
->
+      className="upload-box"
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={handleDrop}
+    >
       <h2>Drag & Drop PDFs Here</h2>
 
-        <p>
-            or click the button below to browse your files.
-        </p>
+      <p>
+        or click the button below to browse your files.
+      </p>
 
       <input
         type="file"
@@ -42,30 +48,6 @@ function UploadBox({ files, setFiles }) {
       <label htmlFor="pdf-upload" className="upload-button">
         Choose PDFs
       </label>
-
-      {files.length > 0 && (
-        <div className="file-list">
-          <h3>Selected Files</h3>
-
-          {files.map((file, index) => (
-  <div className="file-card" key={index}>
-    <div>
-      <strong>📄 {file.name}</strong>
-      <p>{(file.size / 1024).toFixed(1)} KB</p>
-    </div>
-
-    <button
-      className="remove-button"
-      onClick={() =>
-        setFiles(files.filter((_, i) => i !== index))
-      }
-    >
-      ❌
-    </button>
-  </div>
-))}
-        </div>
-      )}
     </div>
   );
 }
