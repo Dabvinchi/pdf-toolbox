@@ -24,11 +24,11 @@ function FileList({ files, setFiles }) {
     }
 
     const oldIndex = files.findIndex(
-      (file) => file.name === active.id
+      (file) => file.id === active.id
     );
 
     const newIndex = files.findIndex(
-      (file) => file.name === over.id
+      (file) => file.id === over.id
     );
 
     setFiles(arrayMove(files, oldIndex, newIndex));
@@ -47,12 +47,12 @@ function FileList({ files, setFiles }) {
         onDragEnd={handleDragEnd}
       >
         <SortableContext
-          items={files.map((file) => file.name)}
+          items={files.map((file) => file.id)}
           strategy={verticalListSortingStrategy}
         >
           {files.map((file, index) => (
             <SortableFile
-              key={file.name}
+              key={file.id}
               file={file}
               onRemove={() => removeFile(index)}
             />

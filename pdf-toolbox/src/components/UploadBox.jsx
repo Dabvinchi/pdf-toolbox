@@ -1,25 +1,24 @@
 function UploadBox({ files, setFiles }) {
-
   function handleFiles(event) {
     const selectedFiles = Array.from(event.target.files).map((file) => ({
-  id: crypto.randomUUID(),
-  file,
-}));
+      id: crypto.randomUUID(),
+      file,
+    }));
 
-setFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
+    setFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
   }
 
   function handleDrop(event) {
     event.preventDefault();
 
-    const pdfFiles = droppedFiles
-  .filter((file) => file.type === "application/pdf")
-  .map((file) => ({
-    id: crypto.randomUUID(),
-    file,
-  }));
+    const droppedFiles = Array.from(event.dataTransfer.files);
 
-setFiles((prevFiles) => [...prevFiles, ...pdfFiles]);
+    const pdfFiles = droppedFiles
+      .filter((file) => file.type === "application/pdf")
+      .map((file) => ({
+        id: crypto.randomUUID(),
+        file,
+      }));
 
     setFiles((prevFiles) => [...prevFiles, ...pdfFiles]);
   }
@@ -32,9 +31,7 @@ setFiles((prevFiles) => [...prevFiles, ...pdfFiles]);
     >
       <h2>Drag & Drop PDFs Here</h2>
 
-      <p>
-        or click the button below to browse your files.
-      </p>
+      <p>or click the button below to browse your files.</p>
 
       <input
         type="file"

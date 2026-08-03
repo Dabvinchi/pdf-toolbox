@@ -3,7 +3,7 @@ import { mergePDFs } from "../utils/pdf";
 function MergeButton({ files }) {
   async function handleMerge() {
   try {
-    await mergePDFs(files);
+    await mergePDFs(files.map((item) => item.file));
   } catch (error) {
     console.error(error);
     alert("Something went wrong while merging PDFs.");
