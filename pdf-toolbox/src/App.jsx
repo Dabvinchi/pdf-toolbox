@@ -1,9 +1,8 @@
 import { useState } from "react";
 import Hero from "./components/Hero";
 import ToolDashboard from "./components/ToolDashboard";
-import UploadBox from "./components/UploadBox";
-import MergeButton from "./components/MergeButton";
 import MergeTool from "./tools/MergeTool";
+import SplitTool from "./tools/SplitTool";
 
 function App() {
   const [files, setFiles] = useState([]);
@@ -13,17 +12,21 @@ function App() {
     <div className="app">
       <Hero />
 
-{activeTool === null && (
-  <ToolDashboard setActiveTool={setActiveTool} />
-)}
+      {activeTool === null && (
+        <ToolDashboard setActiveTool={setActiveTool} />
+      )}
 
-{activeTool === "merge" && (
-  <MergeTool
-    files={files}
-    setFiles={setFiles}
-    setActiveTool={setActiveTool}
-  />
-)}
+      {activeTool === "merge" && (
+        <MergeTool
+  setActiveTool={setActiveTool}
+/>
+      )}
+
+      {activeTool === "split" && (
+        <SplitTool
+  setActiveTool={setActiveTool}
+/>
+      )}
     </div>
   );
 }
