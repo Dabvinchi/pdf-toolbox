@@ -66,6 +66,17 @@ function CompressTool({ setActiveTool }) {
                 </strong>
               </p>
             </div>
+            
+                  <div className="compression-notice">
+                    <strong>⚠️ Image-based compression</strong>
+
+                    <p>
+                        This compression method converts each PDF page
+                        into a compressed image. It can significantly
+                        reduce file size, but text may no longer be
+                        selectable.
+                    </p>
+                    </div>
 
             <div className="compression-options">
               <h3>Compression Level</h3>

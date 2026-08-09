@@ -10,6 +10,9 @@ function CompressButton({
   const [isCompressing, setIsCompressing] =
     useState(false);
 
+  const [progress, setProgress] =
+    useState(null);
+
   async function handleCompress() {
     if (files.length !== 1) {
       onError("Please select one PDF.");
@@ -18,10 +21,17 @@ function CompressButton({
 
     try {
       setIsCompressing(true);
+      setProgress(null);
 
       const result = await compressPDF(
         files[0].file,
-        compressionLevel
+        compressionLevel,
+        ({ current, total }) => {
+          setProgress({
+            current,
+            total,
+          });
+        }
       );
 
       onSuccess(result);
@@ -29,18 +39,22 @@ function CompressButton({
       console.error(error);
 
       onError(
-        "Something went wrong while compressing the PDF."
+        error.message ||
+          "Something went wrong while compressing the PDF."
       );
     } finally {
       setIsCompressing(false);
+      setProgress(null);
     }
   }
 
-  const buttonText = {
-    high: "🗜️ Compress PDF",
-    recommended: "🗜️ Compress PDF",
-    small: "🗜️ Compress PDF",
-  };
+  let buttonText = "🗜️ Compress PDF";
+
+  if (isCompressing && progress) {
+    buttonText = `⏳ Compressing Page ${progress.current} of ${progress.total}...`;
+  } else if (isCompressing) {
+    buttonText = "⏳ Preparing PDF...";
+  }
 
   return (
     <button
@@ -51,9 +65,7 @@ function CompressButton({
         files.length !== 1
       }
     >
-      {isCompressing
-        ? "⏳ Compressing..."
-        : buttonText[compressionLevel]}
+      {buttonText}
     </button>
   );
 }
