@@ -1,31 +1,38 @@
 import { PDFDocument } from "pdf-lib";
 
-export async function splitPDF(file, startPage, endPage) {
-  const bytes = await file.arrayBuffer();
+async function splitPDF(file, selectedPages) {
+  if (!file) {
+    throw new Error("No PDF file selected.");
+  }
 
-  const pdf = await PDFDocument.load(bytes);
+  if (!selectedPages || selectedPages.length === 0) {
+    throw new Error("No pages selected.");
+  }
+
+  const fileBytes = await file.arrayBuffer();
+
+  const sourcePdf = await PDFDocument.load(fileBytes);
 
   const newPdf = await PDFDocument.create();
 
-  const totalPages = pdf.getPageCount();
+  // Sort pages so they stay in their original PDF order.
+  const sortedPages = [...selectedPages].sort(
+    (a, b) => a - b
+  );
 
-  if (
-    startPage < 1 ||
-    endPage > totalPages ||
-    startPage > endPage
-  ) {
-    throw new Error("Invalid page range.");
-  }
+  // Convert page numbers (1-based) to indexes (0-based).
+  const pageIndexes = sortedPages.map(
+    (pageNumber) => pageNumber - 1
+  );
 
-  const pageIndexes = [];
+  const copiedPages = await newPdf.copyPages(
+    sourcePdf,
+    pageIndexes
+  );
 
-  for (let i = startPage - 1; i < endPage; i++) {
-    pageIndexes.push(i);
-  }
-
-  const copiedPages = await newPdf.copyPages(pdf, pageIndexes);
-
-  copiedPages.forEach((page) => newPdf.addPage(page));
+  copiedPages.forEach((page) => {
+    newPdf.addPage(page);
+  });
 
   const pdfBytes = await newPdf.save();
 
@@ -38,10 +45,15 @@ export async function splitPDF(file, startPage, endPage) {
   const link = document.createElement("a");
 
   link.href = url;
+  link.download = "split-pdf.pdf";
 
-  link.download = `pages-${startPage}-${endPage}.pdf`;
+  document.body.appendChild(link);
 
   link.click();
 
+  document.body.removeChild(link);
+
   URL.revokeObjectURL(url);
 }
+
+export default splitPDF;

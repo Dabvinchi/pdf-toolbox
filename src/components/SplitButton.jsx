@@ -1,34 +1,44 @@
-import { splitPDF } from "../utils/splitPdf";
+import splitPDF from "../utils/splitPdf";
 
 function SplitButton({
   files,
-  startPage,
-  endPage,
-  error,
+  selectedPages,
 }) {
   async function handleSplit() {
+    if (files.length !== 1) {
+      alert("Please select one PDF.");
+      return;
+    }
+
+    if (!selectedPages || selectedPages.length === 0) {
+      alert("Please select at least one page.");
+      return;
+    }
+
     try {
       await splitPDF(
         files[0].file,
-        Number(startPage),
-        Number(endPage)
+        selectedPages
       );
-    } catch (err) {
-      console.error(err);
-      alert(err.message);
+    } catch (error) {
+      console.error(error);
+
+      alert(
+        "Something went wrong while splitting the PDF."
+      );
     }
   }
+
+  const disabled =
+    files.length !== 1 ||
+    !selectedPages ||
+    selectedPages.length === 0;
 
   return (
     <button
       className="split-button"
       onClick={handleSplit}
-      disabled={
-        files.length !== 1 ||
-        !startPage ||
-        !endPage ||
-        error
-      }
+      disabled={disabled}
     >
       ✂ Split PDF
     </button>

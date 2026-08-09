@@ -7,39 +7,40 @@ import { getPdfPageCount } from "../utils/getPdfPageCount";
 
 function SplitTool({ setActiveTool }) {
   const [files, setFiles] = useState([]);
-  const [startPage, setStartPage] = useState("");
-  const [endPage, setEndPage] = useState("");
   const [pageCount, setPageCount] = useState(0);
-  const [error, setError] = useState("");
   const [selectedPages, setSelectedPages] = useState([]);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     async function loadPageCount() {
       if (files.length !== 1) {
         setPageCount(0);
-        setStartPage("");
-        setEndPage("");
         setSelectedPages([]);
         setError("");
         return;
       }
 
       try {
-        const count = await getPdfPageCount(files[0].file);
+        const count = await getPdfPageCount(
+          files[0].file
+        );
 
         setPageCount(count);
-        setStartPage("1");
-        setEndPage(String(count));
 
-        // Initially select every page.
+        // Select every page initially.
         setSelectedPages(
           Array.from(
             { length: count },
             (_, index) => index + 1
           )
         );
+
+        setError("");
       } catch (error) {
         console.error(error);
+
+        setPageCount(0);
+        setSelectedPages([]);
         setError("Failed to read the PDF.");
       }
     }
@@ -47,47 +48,11 @@ function SplitTool({ setActiveTool }) {
     loadPageCount();
   }, [files]);
 
-  useEffect(() => {
-    if (files.length !== 1) {
-      return;
-    }
-
-    const start = Number(startPage);
-    const end = Number(endPage);
-
-    if (!start || !end) {
-      setError("Enter both page numbers.");
-      return;
-    }
-
-    if (start < 1) {
-      setError("Start page must be at least 1.");
-      return;
-    }
-
-    if (end > pageCount) {
-      setError(
-        `This PDF only has ${pageCount} pages.`
-      );
-      return;
-    }
-
-    if (start > end) {
-      setError(
-        "Start page must be less than or equal to the end page."
-      );
-      return;
-    }
-
-    setError("");
-  }, [
-    startPage,
-    endPage,
-    pageCount,
-    files,
-  ]);
-
   function handleSelectAll() {
+    if (pageCount === 0) {
+      return;
+    }
+
     setSelectedPages(
       Array.from(
         { length: pageCount },
@@ -113,7 +78,8 @@ function SplitTool({ setActiveTool }) {
         <h1>✂ Split PDF</h1>
 
         <p>
-          Extract a range of pages from a PDF into a new document.
+          Select the pages you want to extract
+          into a new PDF.
         </p>
 
         <UploadBox
@@ -159,53 +125,25 @@ function SplitTool({ setActiveTool }) {
           </p>
         )}
 
-        <div className="split-options">
-          <h3>Pages</h3>
-
-          <div className="page-inputs">
-            <input
-              type="number"
-              min="1"
-              max={pageCount}
-              placeholder="Start"
-              value={startPage}
-              onChange={(e) =>
-                setStartPage(e.target.value)
-              }
-            />
-
-            <span>—</span>
-
-            <input
-              type="number"
-              min="1"
-              max={pageCount}
-              placeholder="End"
-              value={endPage}
-              onChange={(e) =>
-                setEndPage(e.target.value)
-              }
-            />
-          </div>
-
-          <p className="split-help">
-            Example: 1–{pageCount || 5}
+        {error && (
+          <p className="split-error">
+            {error}
           </p>
+        )}
 
-          {error && (
-            <p className="split-error">
-              {error}
-            </p>
-          )}
-
-          <SplitButton
-            files={files}
-            startPage={startPage}
-            endPage={endPage}
-            error={error}
-            selectedPages={selectedPages}
-          />
+        <div className="split-summary">
+          <p>
+            Selected pages:{" "}
+            <strong>
+              {selectedPages.length}
+            </strong>
+          </p>
         </div>
+
+        <SplitButton
+          files={files}
+          selectedPages={selectedPages}
+        />
       </div>
     </>
   );
