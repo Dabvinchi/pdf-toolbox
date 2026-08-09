@@ -15,12 +15,11 @@ async function splitPDF(file, selectedPages) {
 
   const newPdf = await PDFDocument.create();
 
-  // Sort pages so they stay in their original PDF order.
+  // Keep pages in their original PDF order.
   const sortedPages = [...selectedPages].sort(
     (a, b) => a - b
   );
 
-  // Convert page numbers (1-based) to indexes (0-based).
   const pageIndexes = sortedPages.map(
     (pageNumber) => pageNumber - 1
   );
@@ -42,10 +41,18 @@ async function splitPDF(file, selectedPages) {
 
   const url = URL.createObjectURL(blob);
 
+  // Remove ".pdf" from the original filename.
+  const originalName = file.name.replace(
+    /\.pdf$/i,
+    ""
+  );
+
+  const downloadName = `${originalName}_split.pdf`;
+
   const link = document.createElement("a");
 
   link.href = url;
-  link.download = "split-pdf.pdf";
+  link.download = downloadName;
 
   document.body.appendChild(link);
 

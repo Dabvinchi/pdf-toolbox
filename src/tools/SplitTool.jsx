@@ -9,7 +9,9 @@ function SplitTool({ setActiveTool }) {
   const [files, setFiles] = useState([]);
   const [pageCount, setPageCount] = useState(0);
   const [selectedPages, setSelectedPages] = useState([]);
+
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   useEffect(() => {
     async function loadPageCount() {
@@ -17,6 +19,7 @@ function SplitTool({ setActiveTool }) {
         setPageCount(0);
         setSelectedPages([]);
         setError("");
+        setSuccess("");
         return;
       }
 
@@ -27,7 +30,7 @@ function SplitTool({ setActiveTool }) {
 
         setPageCount(count);
 
-        // Select every page initially.
+        // Select all pages initially.
         setSelectedPages(
           Array.from(
             { length: count },
@@ -36,12 +39,14 @@ function SplitTool({ setActiveTool }) {
         );
 
         setError("");
+        setSuccess("");
       } catch (error) {
         console.error(error);
 
         setPageCount(0);
         setSelectedPages([]);
         setError("Failed to read the PDF.");
+        setSuccess("");
       }
     }
 
@@ -59,11 +64,36 @@ function SplitTool({ setActiveTool }) {
         (_, index) => index + 1
       )
     );
+
+    setError("");
+    setSuccess("");
   }
 
   function handleClearSelection() {
     setSelectedPages([]);
+    setError("");
+    setSuccess("");
   }
+
+  function handleSuccess() {
+    setSuccess(
+      "PDF split successfully! Your file has been downloaded."
+    );
+
+    setError("");
+  }
+
+  function handleError(message) {
+    setError(message);
+    setSuccess("");
+  }
+
+  const selectedPagesText =
+    selectedPages.length > 0
+      ? [...selectedPages]
+          .sort((a, b) => a - b)
+          .join(", ")
+      : "None";
 
   return (
     <>
@@ -125,24 +155,35 @@ function SplitTool({ setActiveTool }) {
           </p>
         )}
 
+        {files.length === 1 && (
+          <div className="split-summary">
+            <p>
+              Selected pages:
+            </p>
+
+            <strong>
+              {selectedPagesText}
+            </strong>
+          </div>
+        )}
+
         {error && (
           <p className="split-error">
             {error}
           </p>
         )}
 
-        <div className="split-summary">
-          <p>
-            Selected pages:{" "}
-            <strong>
-              {selectedPages.length}
-            </strong>
+        {success && (
+          <p className="split-success">
+            ✓ {success}
           </p>
-        </div>
+        )}
 
         <SplitButton
           files={files}
           selectedPages={selectedPages}
+          onSuccess={handleSuccess}
+          onError={handleError}
         />
       </div>
     </>

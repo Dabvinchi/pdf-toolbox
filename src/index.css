@@ -393,3 +393,75 @@ body{
 .thumbnail-status {
   margin: 10px 0;
 }
+.split-summary {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #f8f8f8;
+}
+
+.split-summary p {
+  margin: 0 0 6px;
+  font-weight: 600;
+}
+
+.split-summary strong {
+  word-break: break-word;
+}
+
+.split-success {
+  margin-top: 15px;
+  padding: 12px 15px;
+  border-radius: 8px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  font-weight: 600;
+}
+
+.split-error {
+  margin-top: 15px;
+  padding: 12px 15px;
+  border-radius: 8px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  font-weight: 600;
+}
+
+.split-button {
+  display: block;
+  margin: 25px auto 0;
+  padding: 14px 32px;
+
+  background: #2563eb;
+  color: white;
+
+  border: none;
+  border-radius: 8px;
+
+  font-size: 17px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease,
+    box-shadow 0.2s ease;
+}
+
+.split-button:hover:not(:disabled) {
+  background: #1d4ed8;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+}
+
+.split-button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.split-button:disabled {
+  background: #93c5fd;
+  color: #e5e7eb;
+  cursor: not-allowed;
+  opacity: 1;
+}
