@@ -3,6 +3,7 @@ import compressPDF from "../utils/compressPdf";
 
 function CompressButton({
   files,
+  compressionLevel,
   onSuccess,
   onError,
 }) {
@@ -19,14 +20,11 @@ function CompressButton({
       setIsCompressing(true);
 
       const result = await compressPDF(
-        files[0].file
+        files[0].file,
+        compressionLevel
       );
 
-      onSuccess(
-        `PDF compressed successfully! Saved ${formatFileSize(
-          result.savedBytes
-        )}. Your file has been downloaded.`
-      );
+      onSuccess(result);
     } catch (error) {
       console.error(error);
 
@@ -37,6 +35,12 @@ function CompressButton({
       setIsCompressing(false);
     }
   }
+
+  const buttonText = {
+    high: "🗜️ Compress PDF",
+    recommended: "🗜️ Compress PDF",
+    small: "🗜️ Compress PDF",
+  };
 
   return (
     <button
@@ -49,25 +53,9 @@ function CompressButton({
     >
       {isCompressing
         ? "⏳ Compressing..."
-        : "🗜️ Compress PDF"}
+        : buttonText[compressionLevel]}
     </button>
   );
-}
-
-function formatFileSize(bytes) {
-  if (bytes <= 0) {
-    return "0 B";
-  }
-
-  if (bytes < 1024) {
-    return `${bytes} B`;
-  }
-
-  if (bytes < 1024 * 1024) {
-    return `${(bytes / 1024).toFixed(1)} KB`;
-  }
-
-  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
 }
 
 export default CompressButton;
