@@ -1,5 +1,8 @@
 import { useState } from "react";
+
+import Hero from "./components/Hero";
 import ToolDashboard from "./components/ToolDashboard";
+
 import MergeTool from "./tools/MergeTool";
 import SplitTool from "./tools/SplitTool";
 import CompressTool from "./tools/CompressTool";
@@ -8,14 +11,19 @@ import RotateTool from "./tools/RotateTool";
 import ExtractPagesTool from "./tools/ExtractPagesTool";
 
 function App() {
+  const [files, setFiles] = useState([]);
   const [activeTool, setActiveTool] = useState(null);
 
   return (
     <>
       {activeTool === null && (
-        <ToolDashboard
-          setActiveTool={setActiveTool}
-        />
+        <>
+          <Hero />
+
+          <ToolDashboard
+            setActiveTool={setActiveTool}
+          />
+        </>
       )}
 
       {activeTool === "merge" && (
@@ -47,6 +55,7 @@ function App() {
           setActiveTool={setActiveTool}
         />
       )}
+
       {activeTool === "extract" && (
         <ExtractPagesTool
           setActiveTool={setActiveTool}
