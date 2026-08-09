@@ -3,6 +3,7 @@ import Hero from "./components/Hero";
 import ToolDashboard from "./components/ToolDashboard";
 import MergeTool from "./tools/MergeTool";
 import SplitTool from "./tools/SplitTool";
+import CompressTool from "./tools/CompressTool";
 
 function App() {
   const [files, setFiles] = useState([]);
@@ -13,7 +14,9 @@ function App() {
       <Hero />
 
       {activeTool === null && (
-        <ToolDashboard setActiveTool={setActiveTool} />
+        <ToolDashboard
+          setActiveTool={setActiveTool}
+        />
       )}
 
       {activeTool === "merge" && (
@@ -26,6 +29,12 @@ function App() {
 
       {activeTool === "split" && (
         <SplitTool
+          setActiveTool={setActiveTool}
+        />
+      )}
+
+      {activeTool === "compress" && (
+        <CompressTool
           setActiveTool={setActiveTool}
         />
       )}

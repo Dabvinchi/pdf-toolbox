@@ -3,43 +3,43 @@ const tools = [
     title: "Merge PDFs",
     description: "Combine multiple PDFs into one file.",
     icon: "📄",
+    id: "merge",
     available: true,
-    tool: "merge",
   },
   {
     title: "Split PDF",
     description: "Split one PDF into separate files.",
     icon: "✂️",
+    id: "split",
     available: true,
-    tool: "split",
   },
   {
     title: "Compress PDF",
     description: "Reduce PDF size.",
     icon: "🗜️",
-    available: false,
-    tool: "compress",
+    id: "compress",
+    available: true,
   },
   {
     title: "PDF to Images",
     description: "Convert every page into an image.",
     icon: "🖼️",
+    id: "images",
     available: false,
-    tool: "images",
   },
   {
     title: "Rotate PDF",
     description: "Rotate pages.",
     icon: "🔄",
+    id: "rotate",
     available: false,
-    tool: "rotate",
   },
   {
     title: "Extract Pages",
     description: "Save selected pages.",
     icon: "📑",
+    id: "extract",
     available: false,
-    tool: "extract",
   },
 ];
 
@@ -51,19 +51,27 @@ function ToolDashboard({ setActiveTool }) {
       <div className="tool-grid">
         {tools.map((tool) => (
           <div
-            key={tool.title}
             className={`tool-card ${
-              tool.available ? "available" : "coming-soon"
+              tool.available
+                ? "available"
+                : "coming-soon"
             }`}
+            key={tool.title}
           >
-            <div className="tool-icon">{tool.icon}</div>
+            <div className="tool-icon">
+              {tool.icon}
+            </div>
 
             <h3>{tool.title}</h3>
 
             <p>{tool.description}</p>
 
             {tool.available ? (
-              <button onClick={() => setActiveTool(tool.tool)}>
+              <button
+                onClick={() =>
+                  setActiveTool(tool.id)
+                }
+              >
                 Open
               </button>
             ) : (
