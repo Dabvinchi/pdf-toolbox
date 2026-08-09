@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import UploadBox from "../components/UploadBox";
 import SplitButton from "../components/SplitButton";
 import FileList from "../features/merge/FileList";
+import PdfThumbnailViewer from "../features/split/PdfThumbnailViewer";
 import { getPdfPageCount } from "../utils/getPdfPageCount";
 
 function SplitTool({ setActiveTool }) {
@@ -11,7 +12,6 @@ function SplitTool({ setActiveTool }) {
   const [pageCount, setPageCount] = useState(0);
   const [error, setError] = useState("");
 
-  // Read the uploaded PDF and determine its total pages
   useEffect(() => {
     async function loadPageCount() {
       if (files.length !== 1) {
@@ -30,13 +30,13 @@ function SplitTool({ setActiveTool }) {
         setEndPage(String(count));
       } catch (error) {
         console.error(error);
+        setError("Failed to read the PDF.");
       }
     }
 
     loadPageCount();
   }, [files]);
 
-  // Validate the selected page range
   useEffect(() => {
     if (files.length !== 1) {
       setError("");
@@ -97,6 +97,11 @@ function SplitTool({ setActiveTool }) {
           setFiles={setFiles}
         />
 
+        {files.length === 1 && (
+          <PdfThumbnailViewer
+            file={files[0].file}
+          />
+        )}
 
         {pageCount > 0 && (
           <p className="page-count">
