@@ -25,7 +25,7 @@ const tools = [
     description: "Convert every page into an image.",
     icon: "🖼️",
     id: "images",
-    available: false,
+    available: true,
   },
   {
     title: "Rotate PDF",

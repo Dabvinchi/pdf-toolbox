@@ -1,18 +1,15 @@
 import { useState } from "react";
-import Hero from "./components/Hero";
 import ToolDashboard from "./components/ToolDashboard";
 import MergeTool from "./tools/MergeTool";
 import SplitTool from "./tools/SplitTool";
 import CompressTool from "./tools/CompressTool";
+import PdfImagesTool from "./tools/PdfImagesTool";
 
 function App() {
-  const [files, setFiles] = useState([]);
   const [activeTool, setActiveTool] = useState(null);
 
   return (
-    <div className="app">
-      <Hero />
-
+    <>
       {activeTool === null && (
         <ToolDashboard
           setActiveTool={setActiveTool}
@@ -21,8 +18,6 @@ function App() {
 
       {activeTool === "merge" && (
         <MergeTool
-          files={files}
-          setFiles={setFiles}
           setActiveTool={setActiveTool}
         />
       )}
@@ -38,7 +33,13 @@ function App() {
           setActiveTool={setActiveTool}
         />
       )}
-    </div>
+
+      {activeTool === "images" && (
+        <PdfImagesTool
+          setActiveTool={setActiveTool}
+        />
+      )}
+    </>
   );
 }
 
