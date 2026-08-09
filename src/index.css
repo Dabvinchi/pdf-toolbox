@@ -668,3 +668,58 @@ body{
   font-size: 14px;
   line-height: 1.5;
 }
+.compression-modes {
+  margin-top: 25px;
+}
+
+.compression-modes h3 {
+  margin-bottom: 12px;
+}
+
+.compression-mode {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+
+  padding: 15px;
+
+  margin-bottom: 10px;
+
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.compression-mode:hover {
+  background: #f8fafc;
+}
+
+.compression-mode.selected {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.compression-mode input {
+  margin-top: 4px;
+  cursor: pointer;
+}
+
+.compression-mode div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.compression-mode strong {
+  font-size: 16px;
+}
+
+.compression-mode span {
+  font-size: 14px;
+  opacity: 0.7;
+}

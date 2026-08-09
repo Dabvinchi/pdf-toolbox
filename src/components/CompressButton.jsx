@@ -3,6 +3,7 @@ import compressPDF from "../utils/compressPdf";
 
 function CompressButton({
   files,
+  compressionMode,
   compressionLevel,
   onSuccess,
   onError,
@@ -25,6 +26,7 @@ function CompressButton({
 
       const result = await compressPDF(
         files[0].file,
+        compressionMode,
         compressionLevel,
         ({ current, total }) => {
           setProgress({
@@ -51,9 +53,10 @@ function CompressButton({
   let buttonText = "🗜️ Compress PDF";
 
   if (isCompressing && progress) {
-    buttonText = `⏳ Compressing Page ${progress.current} of ${progress.total}...`;
+    buttonText =
+      `⏳ Compressing Page ${progress.current} of ${progress.total}...`;
   } else if (isCompressing) {
-    buttonText = "⏳ Preparing PDF...";
+    buttonText = "⏳ Compressing...";
   }
 
   return (

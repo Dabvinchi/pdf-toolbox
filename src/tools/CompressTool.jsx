@@ -5,11 +5,27 @@ import CompressButton from "../components/CompressButton";
 
 function CompressTool({ setActiveTool }) {
   const [files, setFiles] = useState([]);
+
+  const [compressionMode, setCompressionMode] =
+    useState("standard");
+
   const [compressionLevel, setCompressionLevel] =
     useState("recommended");
 
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
+
+  function handleFilesChange(newFiles) {
+    setFiles(newFiles);
+    setResult(null);
+    setError("");
+  }
+
+  function handleModeChange(mode) {
+    setCompressionMode(mode);
+    setResult(null);
+    setError("");
+  }
 
   function handleSuccess(compressionResult) {
     setResult(compressionResult);
@@ -19,12 +35,6 @@ function CompressTool({ setActiveTool }) {
   function handleError(message) {
     setError(message);
     setResult(null);
-  }
-
-  function handleFilesChange(newFiles) {
-    setFiles(newFiles);
-    setResult(null);
-    setError("");
   }
 
   return (
@@ -66,112 +76,191 @@ function CompressTool({ setActiveTool }) {
                 </strong>
               </p>
             </div>
-            
-                  <div className="compression-notice">
-                    <strong>⚠️ Image-based compression</strong>
 
-                    <p>
-                        This compression method converts each PDF page
-                        into a compressed image. It can significantly
-                        reduce file size, but text may no longer be
-                        selectable.
-                    </p>
-                    </div>
-
-            <div className="compression-options">
-              <h3>Compression Level</h3>
+            <div className="compression-modes">
+              <h3>Compression Mode</h3>
 
               <label
                 className={
-                  compressionLevel === "high"
-                    ? "compression-option selected"
-                    : "compression-option"
+                  compressionMode === "standard"
+                    ? "compression-mode selected"
+                    : "compression-mode"
                 }
               >
                 <input
                   type="radio"
-                  name="compression"
-                  value="high"
+                  name="compressionMode"
+                  value="standard"
                   checked={
-                    compressionLevel === "high"
+                    compressionMode === "standard"
                   }
                   onChange={() =>
-                    setCompressionLevel("high")
+                    handleModeChange("standard")
                   }
                 />
 
                 <div>
-                  <strong>High Quality</strong>
+                  <strong>
+                    Standard Compression
+                  </strong>
 
                   <span>
-                    Best quality with lighter
-                    compression.
+                    Preserve selectable text and
+                    optimize the PDF structure.
                   </span>
                 </div>
               </label>
 
               <label
                 className={
-                  compressionLevel ===
-                  "recommended"
-                    ? "compression-option selected"
-                    : "compression-option"
+                  compressionMode === "strong"
+                    ? "compression-mode selected"
+                    : "compression-mode"
                 }
               >
                 <input
                   type="radio"
-                  name="compression"
-                  value="recommended"
+                  name="compressionMode"
+                  value="strong"
                   checked={
-                    compressionLevel ===
-                    "recommended"
+                    compressionMode === "strong"
                   }
                   onChange={() =>
-                    setCompressionLevel(
-                      "recommended"
-                    )
+                    handleModeChange("strong")
                   }
                 />
 
                 <div>
-                  <strong>Recommended</strong>
+                  <strong>
+                    Strong Compression
+                  </strong>
 
                   <span>
-                    Good balance between size
-                    and quality.
-                  </span>
-                </div>
-              </label>
-
-              <label
-                className={
-                  compressionLevel === "small"
-                    ? "compression-option selected"
-                    : "compression-option"
-                }
-              >
-                <input
-                  type="radio"
-                  name="compression"
-                  value="small"
-                  checked={
-                    compressionLevel === "small"
-                  }
-                  onChange={() =>
-                    setCompressionLevel("small")
-                  }
-                />
-
-                <div>
-                  <strong>Smallest File</strong>
-
-                  <span>
-                    Prioritize the smallest
-                    possible file size.
+                    Recompress pages as images for
+                    much smaller files.
                   </span>
                 </div>
               </label>
             </div>
+
+            {compressionMode === "strong" && (
+              <>
+                <div className="compression-notice">
+                  <strong>
+                    ⚠️ Strong compression
+                  </strong>
+
+                  <p>
+                    Pages are converted into
+                    compressed images. This can
+                    significantly reduce file size,
+                    but text may no longer be
+                    selectable.
+                  </p>
+                </div>
+
+                <div className="compression-options">
+                  <h3>Compression Level</h3>
+
+                  <label
+                    className={
+                      compressionLevel === "high"
+                        ? "compression-option selected"
+                        : "compression-option"
+                    }
+                  >
+                    <input
+                      type="radio"
+                      name="compression"
+                      value="high"
+                      checked={
+                        compressionLevel === "high"
+                      }
+                      onChange={() =>
+                        setCompressionLevel("high")
+                      }
+                    />
+
+                    <div>
+                      <strong>
+                        High Quality
+                      </strong>
+
+                      <span>
+                        Best quality with lighter
+                        compression.
+                      </span>
+                    </div>
+                  </label>
+
+                  <label
+                    className={
+                      compressionLevel ===
+                      "recommended"
+                        ? "compression-option selected"
+                        : "compression-option"
+                    }
+                  >
+                    <input
+                      type="radio"
+                      name="compression"
+                      value="recommended"
+                      checked={
+                        compressionLevel ===
+                        "recommended"
+                      }
+                      onChange={() =>
+                        setCompressionLevel(
+                          "recommended"
+                        )
+                      }
+                    />
+
+                    <div>
+                      <strong>
+                        Recommended
+                      </strong>
+
+                      <span>
+                        Good balance between size
+                        and quality.
+                      </span>
+                    </div>
+                  </label>
+
+                  <label
+                    className={
+                      compressionLevel === "small"
+                        ? "compression-option selected"
+                        : "compression-option"
+                    }
+                  >
+                    <input
+                      type="radio"
+                      name="compression"
+                      value="small"
+                      checked={
+                        compressionLevel === "small"
+                      }
+                      onChange={() =>
+                        setCompressionLevel("small")
+                      }
+                    />
+
+                    <div>
+                      <strong>
+                        Smallest File
+                      </strong>
+
+                      <span>
+                        Prioritize the smallest
+                        possible file size.
+                      </span>
+                    </div>
+                  </label>
+                </div>
+              </>
+            )}
           </>
         )}
 
@@ -237,6 +326,7 @@ function CompressTool({ setActiveTool }) {
 
         <CompressButton
           files={files}
+          compressionMode={compressionMode}
           compressionLevel={compressionLevel}
           onSuccess={handleSuccess}
           onError={handleError}
