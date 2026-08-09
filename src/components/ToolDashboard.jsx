@@ -39,7 +39,7 @@ const tools = [
     description: "Save selected pages.",
     icon: "📑",
     id: "extract",
-    available: false,
+    available: true,
   },
 ];
 

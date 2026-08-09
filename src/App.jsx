@@ -5,6 +5,7 @@ import SplitTool from "./tools/SplitTool";
 import CompressTool from "./tools/CompressTool";
 import PdfImagesTool from "./tools/PdfImagesTool";
 import RotateTool from "./tools/RotateTool";
+import ExtractPagesTool from "./tools/ExtractPagesTool";
 
 function App() {
   const [activeTool, setActiveTool] = useState(null);
@@ -43,6 +44,11 @@ function App() {
 
       {activeTool === "rotate" && (
         <RotateTool
+          setActiveTool={setActiveTool}
+        />
+      )}
+      {activeTool === "extract" && (
+        <ExtractPagesTool
           setActiveTool={setActiveTool}
         />
       )}

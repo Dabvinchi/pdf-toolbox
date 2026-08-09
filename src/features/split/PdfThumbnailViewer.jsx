@@ -5,7 +5,12 @@ import pdfWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
-function PdfThumbnailViewer({ file, selectedPages, setSelectedPages }) {
+function PdfThumbnailViewer({
+  file,
+  selectedPages,
+  setSelectedPages,
+  setTotalPages,
+}) {
   const [pages, setPages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -18,6 +23,11 @@ function PdfThumbnailViewer({ file, selectedPages, setSelectedPages }) {
     async function loadPdf() {
       if (!file) {
         setPages([]);
+
+        if (setTotalPages) {
+          setTotalPages(0);
+        }
+
         return;
       }
 
@@ -33,6 +43,10 @@ function PdfThumbnailViewer({ file, selectedPages, setSelectedPages }) {
         });
 
         const pdf = await loadingTask.promise;
+
+        if (setTotalPages) {
+          setTotalPages(pdf.numPages);
+        }
 
         const renderedPages = [];
 
@@ -72,10 +86,17 @@ function PdfThumbnailViewer({ file, selectedPages, setSelectedPages }) {
           setPages(renderedPages);
         }
       } catch (err) {
-        console.error("PDF thumbnail error:", err);
+        console.error(
+          "PDF thumbnail error:",
+          err
+        );
 
         if (!cancelled) {
           setError("Failed to load PDF file.");
+
+          if (setTotalPages) {
+            setTotalPages(0);
+          }
         }
       } finally {
         if (!cancelled) {
@@ -89,7 +110,7 @@ function PdfThumbnailViewer({ file, selectedPages, setSelectedPages }) {
     return () => {
       cancelled = true;
     };
-  }, [file]);
+  }, [file, setTotalPages]);
 
   useEffect(() => {
     if (!containerRef.current) {
@@ -101,39 +122,56 @@ function PdfThumbnailViewer({ file, selectedPages, setSelectedPages }) {
     pages.forEach(({ pageNumber, canvas }) => {
       const card = document.createElement("div");
 
-      const isSelected = selectedPages.includes(pageNumber);
+      const isSelected =
+        selectedPages.includes(pageNumber);
 
       card.className = `thumbnail-card ${
-        isSelected ? "thumbnail-selected" : ""
+        isSelected
+          ? "thumbnail-selected"
+          : ""
       }`;
 
       card.addEventListener("click", () => {
         setSelectedPages((currentPages) => {
-          if (currentPages.includes(pageNumber)) {
+          if (
+            currentPages.includes(pageNumber)
+          ) {
             return currentPages.filter(
               (page) => page !== pageNumber
             );
           }
 
-          return [...currentPages, pageNumber];
+          return [
+            ...currentPages,
+            pageNumber,
+          ].sort((a, b) => a - b);
         });
       });
 
-      const canvasWrapper = document.createElement("div");
-      canvasWrapper.className = "thumbnail-canvas";
+      const canvasWrapper =
+        document.createElement("div");
+
+      canvasWrapper.className =
+        "thumbnail-canvas";
 
       canvasWrapper.appendChild(canvas);
 
-      const label = document.createElement("p");
-      label.textContent = `Page ${pageNumber}`;
+      const label =
+        document.createElement("p");
+
+      label.textContent =
+        `Page ${pageNumber}`;
 
       card.appendChild(canvasWrapper);
       card.appendChild(label);
 
       if (isSelected) {
-        const checkmark = document.createElement("div");
+        const checkmark =
+          document.createElement("div");
 
-        checkmark.className = "thumbnail-check";
+        checkmark.className =
+          "thumbnail-check";
+
         checkmark.textContent = "✓";
 
         card.appendChild(checkmark);
@@ -141,19 +179,26 @@ function PdfThumbnailViewer({ file, selectedPages, setSelectedPages }) {
 
       containerRef.current.appendChild(card);
     });
-  }, [pages, selectedPages, setSelectedPages]);
+  }, [
+    pages,
+    selectedPages,
+    setSelectedPages,
+  ]);
 
   if (!file) {
     return null;
   }
 
   return (
-    <div className="thumbnail-section">
+    <div>
       <div className="thumbnail-header">
         <h3>PDF Preview</h3>
 
         <p>
-          Selected: <strong>{selectedPages.length}</strong>
+          Selected:{" "}
+          <strong>
+            {selectedPages.length}
+          </strong>
         </p>
       </div>
 
