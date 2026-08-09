@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Analytics } from "@vercel/analytics/react";
 
 import Hero from "./components/Hero";
 import ToolDashboard from "./components/ToolDashboard";
@@ -61,6 +62,8 @@ function App() {
           setActiveTool={setActiveTool}
         />
       )}
+
+      <Analytics />
     </>
   );
 }
