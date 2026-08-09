@@ -11,6 +11,7 @@ function SplitTool({ setActiveTool }) {
   const [endPage, setEndPage] = useState("");
   const [pageCount, setPageCount] = useState(0);
   const [error, setError] = useState("");
+  const [selectedPages, setSelectedPages] = useState([]);
 
   useEffect(() => {
     async function loadPageCount() {
@@ -18,6 +19,7 @@ function SplitTool({ setActiveTool }) {
         setPageCount(0);
         setStartPage("");
         setEndPage("");
+        setSelectedPages([]);
         setError("");
         return;
       }
@@ -28,6 +30,14 @@ function SplitTool({ setActiveTool }) {
         setPageCount(count);
         setStartPage("1");
         setEndPage(String(count));
+
+        // Initially select every page.
+        setSelectedPages(
+          Array.from(
+            { length: count },
+            (_, index) => index + 1
+          )
+        );
       } catch (error) {
         console.error(error);
         setError("Failed to read the PDF.");
@@ -39,7 +49,6 @@ function SplitTool({ setActiveTool }) {
 
   useEffect(() => {
     if (files.length !== 1) {
-      setError("");
       return;
     }
 
@@ -57,7 +66,9 @@ function SplitTool({ setActiveTool }) {
     }
 
     if (end > pageCount) {
-      setError(`This PDF only has ${pageCount} pages.`);
+      setError(
+        `This PDF only has ${pageCount} pages.`
+      );
       return;
     }
 
@@ -69,7 +80,25 @@ function SplitTool({ setActiveTool }) {
     }
 
     setError("");
-  }, [startPage, endPage, pageCount, files]);
+  }, [
+    startPage,
+    endPage,
+    pageCount,
+    files,
+  ]);
+
+  function handleSelectAll() {
+    setSelectedPages(
+      Array.from(
+        { length: pageCount },
+        (_, index) => index + 1
+      )
+    );
+  }
+
+  function handleClearSelection() {
+    setSelectedPages([]);
+  }
 
   return (
     <>
@@ -98,14 +127,35 @@ function SplitTool({ setActiveTool }) {
         />
 
         {files.length === 1 && (
-          <PdfThumbnailViewer
-            file={files[0].file}
-          />
+          <>
+            <div className="thumbnail-actions">
+              <button
+                type="button"
+                onClick={handleSelectAll}
+              >
+                Select All
+              </button>
+
+              <button
+                type="button"
+                onClick={handleClearSelection}
+              >
+                Clear Selection
+              </button>
+            </div>
+
+            <PdfThumbnailViewer
+              file={files[0].file}
+              selectedPages={selectedPages}
+              setSelectedPages={setSelectedPages}
+            />
+          </>
         )}
 
         {pageCount > 0 && (
           <p className="page-count">
-            📄 Total Pages: <strong>{pageCount}</strong>
+            📄 Total Pages:{" "}
+            <strong>{pageCount}</strong>
           </p>
         )}
 
@@ -119,7 +169,9 @@ function SplitTool({ setActiveTool }) {
               max={pageCount}
               placeholder="Start"
               value={startPage}
-              onChange={(e) => setStartPage(e.target.value)}
+              onChange={(e) =>
+                setStartPage(e.target.value)
+              }
             />
 
             <span>—</span>
@@ -130,7 +182,9 @@ function SplitTool({ setActiveTool }) {
               max={pageCount}
               placeholder="End"
               value={endPage}
-              onChange={(e) => setEndPage(e.target.value)}
+              onChange={(e) =>
+                setEndPage(e.target.value)
+              }
             />
           </div>
 
@@ -149,6 +203,7 @@ function SplitTool({ setActiveTool }) {
             startPage={startPage}
             endPage={endPage}
             error={error}
+            selectedPages={selectedPages}
           />
         </div>
       </div>

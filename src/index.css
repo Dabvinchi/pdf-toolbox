@@ -298,8 +298,38 @@ body{
   margin-top: 30px;
 }
 
-.thumbnail-section h3 {
+.thumbnail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 15px;
+}
+
+.thumbnail-header h3 {
+  margin: 0;
+}
+
+.thumbnail-header p {
+  margin: 0;
+}
+
+.thumbnail-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.thumbnail-actions button {
+  padding: 8px 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+}
+
+.thumbnail-actions button:hover {
+  background: #f3f3f3;
 }
 
 .thumbnail-viewer {
@@ -310,11 +340,23 @@ body{
 }
 
 .thumbnail-card {
+  position: relative;
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 2px solid #ddd;
   border-radius: 8px;
   background: white;
   text-align: center;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.thumbnail-card:hover {
+  transform: translateY(-2px);
+}
+
+.thumbnail-selected {
+  border-color: #2563eb;
+  background: #eff6ff;
 }
 
 .thumbnail-canvas {
@@ -331,6 +373,21 @@ body{
 .thumbnail-card p {
   margin: 8px 0 0;
   font-weight: 600;
+}
+
+.thumbnail-check {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
 }
 
 .thumbnail-status {

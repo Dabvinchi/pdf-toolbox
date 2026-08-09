@@ -5,7 +5,7 @@ import pdfWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
-function PdfThumbnailViewer({ file }) {
+function PdfThumbnailViewer({ file, selectedPages, setSelectedPages }) {
   const [pages, setPages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -36,7 +36,11 @@ function PdfThumbnailViewer({ file }) {
 
         const renderedPages = [];
 
-        for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+        for (
+          let pageNumber = 1;
+          pageNumber <= pdf.numPages;
+          pageNumber++
+        ) {
           if (cancelled) {
             return;
           }
@@ -96,7 +100,24 @@ function PdfThumbnailViewer({ file }) {
 
     pages.forEach(({ pageNumber, canvas }) => {
       const card = document.createElement("div");
-      card.className = "thumbnail-card";
+
+      const isSelected = selectedPages.includes(pageNumber);
+
+      card.className = `thumbnail-card ${
+        isSelected ? "thumbnail-selected" : ""
+      }`;
+
+      card.addEventListener("click", () => {
+        setSelectedPages((currentPages) => {
+          if (currentPages.includes(pageNumber)) {
+            return currentPages.filter(
+              (page) => page !== pageNumber
+            );
+          }
+
+          return [...currentPages, pageNumber];
+        });
+      });
 
       const canvasWrapper = document.createElement("div");
       canvasWrapper.className = "thumbnail-canvas";
@@ -109,9 +130,18 @@ function PdfThumbnailViewer({ file }) {
       card.appendChild(canvasWrapper);
       card.appendChild(label);
 
+      if (isSelected) {
+        const checkmark = document.createElement("div");
+
+        checkmark.className = "thumbnail-check";
+        checkmark.textContent = "✓";
+
+        card.appendChild(checkmark);
+      }
+
       containerRef.current.appendChild(card);
     });
-  }, [pages]);
+  }, [pages, selectedPages, setSelectedPages]);
 
   if (!file) {
     return null;
@@ -119,7 +149,13 @@ function PdfThumbnailViewer({ file }) {
 
   return (
     <div className="thumbnail-section">
-      <h3>PDF Preview</h3>
+      <div className="thumbnail-header">
+        <h3>PDF Preview</h3>
+
+        <p>
+          Selected: <strong>{selectedPages.length}</strong>
+        </p>
+      </div>
 
       {loading && (
         <p className="thumbnail-status">
