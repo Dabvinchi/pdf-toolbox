@@ -18,14 +18,16 @@ function App() {
 
       {activeTool === "merge" && (
         <MergeTool
-  setActiveTool={setActiveTool}
-/>
+          files={files}
+          setFiles={setFiles}
+          setActiveTool={setActiveTool}
+        />
       )}
 
       {activeTool === "split" && (
         <SplitTool
-  setActiveTool={setActiveTool}
-/>
+          setActiveTool={setActiveTool}
+        />
       )}
     </div>
   );
