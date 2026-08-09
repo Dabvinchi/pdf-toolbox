@@ -9,8 +9,7 @@ import { convertPdfPagesToImages } from "../utils/pdfToImages";
 
 function PdfImagesTool({ setActiveTool }) {
   const [files, setFiles] = useState([]);
-  const [selectedPages, setSelectedPages] =
-    useState([]);
+  const [selectedPages, setSelectedPages] = useState([]);
 
   const [format, setFormat] = useState("png");
   const [quality, setQuality] = useState(80);
@@ -19,36 +18,88 @@ function PdfImagesTool({ setActiveTool }) {
   const [isConverting, setIsConverting] =
     useState(false);
 
-  const [progress, setProgress] =
+  const [progress, setProgress] = useState(0);
+
+  const [conversionStage, setConversionStage] =
+    useState("");
+
+  const [convertedCount, setConvertedCount] =
     useState(0);
 
   const [error, setError] = useState("");
+
+  const [downloadUrl, setDownloadUrl] =
+    useState(null);
+
+  const [downloadFilename, setDownloadFilename] =
+    useState("pdf-images.zip");
 
   useEffect(() => {
     setSelectedPages([]);
     setError("");
     setProgress(0);
+    setConversionStage("");
+    setConvertedCount(0);
+
+    if (downloadUrl) {
+      URL.revokeObjectURL(downloadUrl);
+      setDownloadUrl(null);
+    }
   }, [files]);
+
+  useEffect(() => {
+    return () => {
+      if (downloadUrl) {
+        URL.revokeObjectURL(downloadUrl);
+      }
+    };
+  }, [downloadUrl]);
 
   function handleFilesChange(newFiles) {
     setFiles(newFiles);
     setSelectedPages([]);
     setError("");
     setProgress(0);
+    setConversionStage("");
+    setConvertedCount(0);
+  }
+
+  function getZipFilename(filename) {
+    const lastDot =
+      filename.lastIndexOf(".");
+
+    const baseName =
+      lastDot > 0
+        ? filename.substring(0, lastDot)
+        : filename;
+
+    return `${baseName}-images.zip`;
   }
 
   async function handleConvert() {
     if (
       files.length !== 1 ||
-      selectedPages.length === 0
+      selectedPages.length === 0 ||
+      isConverting
     ) {
       return;
     }
 
+    let temporaryUrl = null;
+
     try {
       setIsConverting(true);
       setProgress(0);
+      setConversionStage(
+        "Rendering PDF pages..."
+      );
+      setConvertedCount(0);
       setError("");
+
+      if (downloadUrl) {
+        URL.revokeObjectURL(downloadUrl);
+        setDownloadUrl(null);
+      }
 
       const pdfFile = files[0].file;
 
@@ -59,8 +110,31 @@ function PdfImagesTool({ setActiveTool }) {
           format,
           quality,
           scale,
-          onProgress: setProgress,
+
+          onProgress: (pageProgress) => {
+            setProgress(pageProgress);
+
+            const completedPages =
+              Math.round(
+                (pageProgress /
+                  100) *
+                  selectedPages.length
+              );
+
+            setConvertedCount(
+              Math.min(
+                completedPages,
+                selectedPages.length
+              )
+            );
+          },
         });
+
+      setConversionStage(
+        "Creating ZIP file..."
+      );
+
+      setProgress(0);
 
       const zip = new JSZip();
 
@@ -78,47 +152,78 @@ function PdfImagesTool({ setActiveTool }) {
           },
           (metadata) => {
             setProgress(
-              Math.max(
-                progress,
-                Math.round(
-                  metadata.percent
-                )
-              )
+              Math.round(metadata.percent)
             );
           }
         );
 
-      const url =
+      temporaryUrl =
         URL.createObjectURL(zipBlob);
 
-      const link =
-        document.createElement("a");
+      const filename =
+        getZipFilename(
+          pdfFile.name
+        );
 
-      link.href = url;
-      link.download =
-        "pdf-images.zip";
-
-      document.body.appendChild(link);
-
-      link.click();
-
-      link.remove();
-
-      URL.revokeObjectURL(url);
+      setDownloadFilename(filename);
+      setDownloadUrl(temporaryUrl);
 
       setProgress(100);
-    } catch (error) {
+      setConversionStage(
+        "Conversion complete!"
+      );
+      setConvertedCount(images.length);
+    } catch (conversionError) {
       console.error(
         "PDF to Images error:",
-        error
+        conversionError
       );
 
       setError(
-        error?.message ||
-          "Failed to convert PDF pages."
+        conversionError?.message ||
+          "Something went wrong while converting the PDF."
       );
+
+      setConversionStage("");
+      setProgress(0);
     } finally {
       setIsConverting(false);
+    }
+  }
+
+  function handleDownload() {
+    if (!downloadUrl) {
+      return;
+    }
+
+    const link =
+      document.createElement("a");
+
+    link.href = downloadUrl;
+    link.download = downloadFilename;
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    link.remove();
+  }
+
+  function handleStartOver() {
+    if (isConverting) {
+      return;
+    }
+
+    setFiles([]);
+    setSelectedPages([]);
+    setProgress(0);
+    setConversionStage("");
+    setConvertedCount(0);
+    setError("");
+
+    if (downloadUrl) {
+      URL.revokeObjectURL(downloadUrl);
+      setDownloadUrl(null);
     }
   }
 
@@ -127,6 +232,11 @@ function PdfImagesTool({ setActiveTool }) {
       ? files[0].file
       : null;
 
+  const conversionComplete =
+    Boolean(downloadUrl) &&
+    !isConverting &&
+    !error;
+
   return (
     <>
       <button
@@ -134,6 +244,7 @@ function PdfImagesTool({ setActiveTool }) {
         onClick={() =>
           setActiveTool(null)
         }
+        disabled={isConverting}
       >
         ← Back to Tools
       </button>
@@ -146,28 +257,34 @@ function PdfImagesTool({ setActiveTool }) {
           PNG or JPG images.
         </p>
 
-        <UploadBox
-          files={files}
-          setFiles={handleFilesChange}
-        />
+        {!conversionComplete && (
+          <>
+            <UploadBox
+              files={files}
+              setFiles={handleFilesChange}
+            />
 
-        <FileList
-          files={files}
-          setFiles={handleFilesChange}
-        />
-
-        {pdfFile && (
-          <ImagePageSelector
-            file={pdfFile}
-            selectedPages={selectedPages}
-            setSelectedPages={
-              setSelectedPages
-            }
-          />
+            <FileList
+              files={files}
+              setFiles={handleFilesChange}
+            />
+          </>
         )}
 
         {pdfFile &&
-          selectedPages.length > 0 && (
+          !conversionComplete && (
+            <ImagePageSelector
+              file={pdfFile}
+              selectedPages={selectedPages}
+              setSelectedPages={
+                setSelectedPages
+              }
+            />
+          )}
+
+        {pdfFile &&
+          selectedPages.length > 0 &&
+          !conversionComplete && (
             <div className="image-options">
               <h3>Image Options</h3>
 
@@ -187,7 +304,9 @@ function PdfImagesTool({ setActiveTool }) {
                     onClick={() =>
                       setFormat("png")
                     }
-                    disabled={isConverting}
+                    disabled={
+                      isConverting
+                    }
                   >
                     PNG
                   </button>
@@ -202,7 +321,9 @@ function PdfImagesTool({ setActiveTool }) {
                     onClick={() =>
                       setFormat("jpg")
                     }
-                    disabled={isConverting}
+                    disabled={
+                      isConverting
+                    }
                   >
                     JPG
                   </button>
@@ -352,7 +473,7 @@ function PdfImagesTool({ setActiveTool }) {
                 <div className="conversion-progress">
                   <div className="progress-header">
                     <span>
-                      Converting...
+                      {conversionStage}
                     </span>
 
                     <strong>
@@ -368,6 +489,17 @@ function PdfImagesTool({ setActiveTool }) {
                       }}
                     />
                   </div>
+
+                  {conversionStage ===
+                    "Rendering PDF pages..." && (
+                    <p className="progress-detail">
+                      Page{" "}
+                      {convertedCount} of{" "}
+                      {
+                        selectedPages.length
+                      }
+                    </p>
+                  )}
                 </div>
               )}
 
@@ -382,11 +514,55 @@ function PdfImagesTool({ setActiveTool }) {
                 }
               >
                 {isConverting
-                  ? `Converting... ${progress}%`
+                  ? "Converting..."
                   : "🖼️ Convert to Images"}
               </button>
             </div>
           )}
+
+        {conversionComplete && (
+          <div className="conversion-complete">
+            <div className="success-icon">
+              ✓
+            </div>
+
+            <h2>
+              Conversion complete!
+            </h2>
+
+            <p>
+              Successfully created{" "}
+              <strong>
+                {convertedCount}
+              </strong>{" "}
+              {convertedCount === 1
+                ? "image"
+                : "images"}.
+            </p>
+
+            <p className="download-filename">
+              {downloadFilename}
+            </p>
+
+            <div className="completion-actions">
+              <button
+                type="button"
+                className="convert-images-button"
+                onClick={handleDownload}
+              >
+                ⬇️ Download Images
+              </button>
+
+              <button
+                type="button"
+                className="start-over-button"
+                onClick={handleStartOver}
+              >
+                Convert Another PDF
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
