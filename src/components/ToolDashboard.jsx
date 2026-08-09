@@ -32,7 +32,7 @@ const tools = [
     description: "Rotate pages.",
     icon: "🔄",
     id: "rotate",
-    available: false,
+    available: true,
   },
   {
     title: "Extract Pages",

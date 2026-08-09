@@ -1185,3 +1185,104 @@ body{
 .convert-images-button:disabled {
   cursor: not-allowed;
 }
+/* ============================= */
+/* ROTATE PDF */
+/* ============================= */
+
+.rotate-options {
+  margin-top: 30px;
+  padding: 24px;
+
+  border-radius: 14px;
+
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.rotate-options h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.rotation-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.rotation-buttons button {
+  min-width: 100px;
+
+  padding: 11px 18px;
+
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+
+  background: white;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.rotation-buttons button:hover {
+  border-color: #2563eb;
+}
+
+.rotation-buttons button.active {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: white;
+}
+
+.rotate-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.rotate-summary span {
+  padding: 7px 12px;
+
+  border-radius: 20px;
+
+  background: #e0edff;
+
+  color: #1e40af;
+
+  font-size: 14px;
+}
+
+.rotate-pdf-button {
+  width: 100%;
+
+  padding: 14px 20px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: #2563eb;
+  color: white;
+
+  font-size: 16px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.rotate-pdf-button:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}

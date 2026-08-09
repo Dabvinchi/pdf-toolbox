@@ -4,6 +4,7 @@ import MergeTool from "./tools/MergeTool";
 import SplitTool from "./tools/SplitTool";
 import CompressTool from "./tools/CompressTool";
 import PdfImagesTool from "./tools/PdfImagesTool";
+import RotateTool from "./tools/RotateTool";
 
 function App() {
   const [activeTool, setActiveTool] = useState(null);
@@ -36,6 +37,12 @@ function App() {
 
       {activeTool === "images" && (
         <PdfImagesTool
+          setActiveTool={setActiveTool}
+        />
+      )}
+
+      {activeTool === "rotate" && (
+        <RotateTool
           setActiveTool={setActiveTool}
         />
       )}
